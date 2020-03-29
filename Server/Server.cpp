@@ -1,5 +1,7 @@
 #include "Server.h"
 
+#include <sys/time.h>  // for "gettimeofday()"
+
 #include "../Tools/String_Tools_Exceptions.h"
 #include "Server_Exceptions.h"
 
@@ -46,7 +48,7 @@ void Server::process_request(Socket & client_socket) {
 
     // bucket index too large
     if (request.bucket_index >= this->buckets.size()) {
-      std::string err_str = "Invalid Bucket Inde";
+      std::string err_str = "Invalid Bucket Index";
       perror(err_str.c_str());
 
       // send back failure info
@@ -54,14 +56,20 @@ void Server::process_request(Socket & client_socket) {
 
       return;
     }
+    // add delay time in a required way
+    this->required_delay(request.delay_count);
 
+    // exception-safe lock
+    std::unique_lock<std::mutex> guard(bucket_mutex);
     // process bucket value
     int bucket_val = this->buckets[request.bucket_index];
-    bucket_val += 1;
+    bucket_val += request.delay_count;
     this->buckets[request.bucket_index] = bucket_val;
+    // unlock
+    guard.unlock();
 
     // send back info
-    std::string bucket_val_str = std::to_string(bucket_val);
+    std::string bucket_val_str = std::to_string(bucket_val) + "\n";
     client_socket.send_str(bucket_val_str);
   }
   catch (request_format_exception * e) {
@@ -93,4 +101,15 @@ Server::Request::Request(const std::string & request_str) {
     perror(e->what());
     throw new request_format_exception();
   }
+}
+
+void Server::required_delay(unsigned int req_delay) {
+  struct timeval start, check;
+  double elapsed_seconds;
+  gettimeofday(&start, NULL);
+  do {
+    gettimeofday(&check, NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec / 1000000.0)) -
+                      (start.tv_sec + (start.tv_usec / 1000000.0));
+  } while (elapsed_seconds < req_delay);
 }

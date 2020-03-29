@@ -1,6 +1,7 @@
 #ifndef SERVER_BH
 #define SERVER_BH
 
+#include <mutex>
 #include <queue>
 
 #include "../Socket/Socket.h"
@@ -9,12 +10,17 @@
 
 class Server {
  protected:
+  std::mutex bucket_mutex;
+  std::mutex socket_mutex;
   std::vector<int> buckets;           // the "buckets" of this project
   Socket server_socket;               // the server socket
   std::queue<Socket> client_sockets;  // the accepted-spawned socket to clients
   int thread_mode;                    // either PRE_CREATE_THREADS, or PER~
   // process request from client
   void process_request(Socket & client_socket);
+
+  // hw-required way of adding delay to threads
+  void required_delay(unsigned int req_delay);
 
   class Request {
    public:
