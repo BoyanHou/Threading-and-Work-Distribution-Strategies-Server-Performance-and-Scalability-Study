@@ -8,6 +8,10 @@ class String_Tools {
   // split a string according to delimiter
   static std::vector<std::string> split_str(const std::string & str,
                                             const std::string & delimiter);
+
+  // string to unsigned int
+  static unsigned int str_to_unsigned_int(const std::string & str);
+
   // load a string into a given vector of char
   static void load_into_vector(std::vector<char> & container, const std::string & str);
 

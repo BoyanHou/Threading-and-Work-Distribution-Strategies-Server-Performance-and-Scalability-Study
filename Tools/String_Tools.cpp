@@ -35,6 +35,28 @@ std::vector<std::string> String_Tools::split_str(const std::string & str,
   return parts;
 }
 
+unsigned int String_Tools::str_to_unsigned_int(const std::string & str) {
+  std::string::size_type len = str.length();
+  if (len == 0) {
+    throw new parse_unsigned_int_exception();
+  }
+
+  unsigned int res = 0;
+
+  for (unsigned int i = 0; i < len; i++) {
+    char ch = str[i];
+    if (ch < '0' || ch > '9') {  // not digit
+      throw new parse_unsigned_int_exception();
+    }
+    if (i == 0 && len > 1) {  // leading 0
+      throw new parse_unsigned_int_exception();
+    }
+    int num = (int)(ch - '0');
+    res += res * 10 + num;
+  }
+  return res;
+}
+
 void String_Tools::load_into_vector(std::vector<char> & container,
                                     const std::string & str) {
   for (std::string::size_type i = 0; i < str.length(); i++) {

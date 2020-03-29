@@ -1,18 +1,20 @@
 #ifndef SERVER_BH
 #define SERVER_BH
 
+#include <queue>
+
 #include "../Socket/Socket.h"
 #include "../Tools/String_Tools.h"
 #include "../global_settings.h"
 
 class Server {
  protected:
-  std::vector<int> buckets;            // the "buckets" of this project
-  Socket server_socket;                // the server socket
-  std::vector<Socket> client_sockets;  // the accepted-spawned socket to clients
-  int thread_mode;                     // either PRE_CREATE_THREADS, or PER~
+  std::vector<int> buckets;           // the "buckets" of this project
+  Socket server_socket;               // the server socket
+  std::queue<Socket> client_sockets;  // the accepted-spawned socket to clients
+  int thread_mode;                    // either PRE_CREATE_THREADS, or PER~
   // process request from client
-  void process_request(int client_socket_index);
+  void process_request(Socket & client_socket);
 
   class Request {
    public:
@@ -29,7 +31,11 @@ class Server {
          const std::string & port);  // the port for server socket to bind to
 
   // let the server run
-  void run_server();
+  void run();
+
+  void run_pre();  // run in pre-create mode
+
+  void run_per();  // run in per-create mode
 };
 
 #endif
