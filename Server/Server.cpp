@@ -11,6 +11,8 @@ Server::Server(int thread_mode,
   this->thread_mode = thread_mode;
 
   this->server_socket.bind_to(ip, port);
+  this->server_socket.allow_port_reuse();
+
   this->server_socket.set_listen(BACK_LOG);
 }
 

@@ -196,11 +196,10 @@ void Socket::bind_to(const std::string & ip, const std::string & port) {
 }
 
 void Socket::allow_port_reuse() {
-  int reuse = 1;
-  int state = 0;
-  state = setsockopt(this->sock_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+  int yes = 1;
 
-  if (state == -1) {
+  if (setsockopt(this->sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
+    perror("Fail to set socket reusable\n ");
     throw new allow_port_reuse_exception();
   }
 }
