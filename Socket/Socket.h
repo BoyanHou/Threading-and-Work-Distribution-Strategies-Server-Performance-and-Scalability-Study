@@ -23,8 +23,9 @@ class Socket {
 
  public:
   Socket();
-  Socket(int fd);  // use socket fd to create a socket object
-  ~Socket();       // close the socket fd when destructed
+  Socket(int fd);                 // use socket fd to create a socket object
+  Socket(const Socket & target);  // copy constructor
+  ~Socket();                      // close the socket fd when destructed
 
   // get the current port number of the socket
   virtual std::string get_socket_port();

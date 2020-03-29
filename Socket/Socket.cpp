@@ -24,9 +24,13 @@ Socket::Socket(int sock_fd) {
   this->sock_fd = sock_fd;
 }
 
+// copy constructor
+Socket::Socket(const Socket & target) {
+  this->sock_fd = target.sock_fd;
+}
+
 // close the socket fd when distructed
 Socket::~Socket() {
-  this->close_socket();
 }
 
 std::string Socket::get_socket_port() {
@@ -172,8 +176,8 @@ Socket * Socket::accept_connection() {
   int respawned_sock_fd = accept(this->sock_fd, (struct sockaddr *)&ss, &ss_size);
 
   if (respawned_sock_fd == -1) {
+    perror("Error during socket accpet()\n ");
     throw new socket_accept_exception();
-    exit(-1);
   }
 
   Socket * respawned_sock = new Socket(respawned_sock_fd);

@@ -29,7 +29,6 @@ void Client::run_multi_thread(const std::vector<std::string> & requests) {
 
   std::vector<std::thread> threads;
   for (unsigned int i = 0; i < requests.size(); i++) {
-    
     std::string request = requests[i];
     threads.push_back(std::thread(&Client::thread_func, this, request));
   }

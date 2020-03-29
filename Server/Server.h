@@ -18,7 +18,7 @@ class Server {
   std::queue<Socket> client_sockets;  // the accepted-spawned socket to clients
   int thread_mode;                    // either PRE_CREATE_THREADS, or PER~
   // process request from client
-  void process_request(Socket & client_socket);
+  void process_request(Socket client_socket);
 
   // hw-required way of adding delay to threads
   void required_delay(unsigned int req_delay);
