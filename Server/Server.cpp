@@ -38,7 +38,31 @@ void Server::run_per() {
 }
 
 void Server::run_pre() {
-  //TODO
+  // pre-create threads
+  for (int i = 0; i < PRE_THREAD_NUM; i++) {
+    std::thread pre_thread(&Server::run_pre_thread, this);
+  }
+}
+
+void Server::run_pre_thread() {
+  while (1) {  // pre-created threads always run
+    Socket client_socket;
+    bool got_socket = false;
+    // check for socket
+    if (this->client_sockets.size() != 0) {
+      // exception-safe lock
+      std::unique_lock<std::mutex> guard(this->socket_mutex);
+      client_socket = this->client_sockets.front();  // acquire
+      this->client_sockets.pop();                    // remove
+      // unlock
+      guard.unlock();
+      got_socket = true;
+    }
+    // process request if got a socket
+    if (got_socket) {
+      this->process_request(client_socket);
+    }
+  }
 }
 
 void Server::process_request(Socket & client_socket) {

@@ -13,5 +13,6 @@
 #define PER_CREATE_THREADS 1     // per-create threads mode
 #define SERVER_PORT "12345"
 #define SERVER_IP "0.0.0.0"
+#define PRE_THREAD_NUM 10  // number of pre-created thread num
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <mutex>
 #include <queue>
+#include <thread>
 
 #include "../Socket/Socket.h"
 #include "../Tools/String_Tools.h"
@@ -39,7 +40,8 @@ class Server {
   // let the server run
   void run();
 
-  void run_pre();  // run in pre-create mode
+  void run_pre();         // run in pre-create mode
+  void run_pre_thread();  // func for pre-created thread to run
 
   void run_per();  // run in per-create mode
 };
