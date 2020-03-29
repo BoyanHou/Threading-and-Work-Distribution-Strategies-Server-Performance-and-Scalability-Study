@@ -32,9 +32,13 @@ void Server::run() {
 }
 
 void Server::run_per() {
-  //TODO
-  Socket client_socket = *((this->server_socket).accept_connection());
-  this->process_request(client_socket);
+  while(true){//always accept client connection
+    Socket client_socket = *((this->server_socket).accept_connection());
+    //create a new thread to process request
+    std::thread per_thread(&Server::process_request, this, client_socket);
+    //detach from the main thread
+    per_thread.detach();
+  }
 }
 
 void Server::run_pre() {
@@ -65,7 +69,7 @@ void Server::run_pre_thread() {
   }
 }
 
-void Server::process_request(Socket & client_socket) {
+void Server::process_request(Socket client_socket) {
   std::string request_str = client_socket.recv_str(CLIENT_BUF_SIZE);
   try {
     Server::Request request(request_str);
