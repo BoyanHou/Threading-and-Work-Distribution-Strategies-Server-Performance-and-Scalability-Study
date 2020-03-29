@@ -3,6 +3,13 @@
 
 #include <exception>
 
+class file_not_found_exception : public std::exception {
+ public:
+  virtual const char * what() const throw() override {
+    return "Cannot find file at designated path!";
+  }
+};
+
 class parse_unsigned_int_exception : public std::exception {
  public:
   virtual const char * what() const throw() override {
