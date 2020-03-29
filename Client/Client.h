@@ -12,9 +12,8 @@ class Client {
   // constructor
   Client(const std::string & ip,     //Server's ip
          const std::string & port);  //Server's port
-  void run_client(const std::string & delay_count,
-                  const std::string & bucket_to_add);  // arguments from cmd line
-  void send_request(const std::string & delay_count, const std::string & bucket_to_add);
+  void run_client(const std::string & request);
+  void send_request(const std::string & request);
   std::string recv_response();
 };
 

@@ -1,15 +1,12 @@
 #include "Client.h"
 
 Client::Client(const std::string & ip, const std::string & port) {
-  this->client_socket = Socket();
   this->client_socket.connect_to(ip, port);
 }
 
-void Client::send_request(const std::string & delay_count,
-                          const std::string & bucket_to_add) {
-  std::string to_send = delay_count;
-  to_send += bucket_to_add;
-  this->client_socket.send_str(to_send);
+
+void Client::send_request(const std::string & request) {
+  this->client_socket.send_str(request);
 }
 
 std::string Client::recv_response() {
@@ -17,9 +14,8 @@ std::string Client::recv_response() {
   return response;
 }
 
-void Client::run_client(const std::string & delay_count,
-                        const std::string & bucket_to_add) {
-  this->send_request(delay_count, bucket_to_add);
+void Client::run_client(const std::string & request) {
+  this->send_request(request);
   std::string response = this->recv_response();
   //next line is for test
   std::cout << "Response is:" << response << std::endl;

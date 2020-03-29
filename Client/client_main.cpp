@@ -13,18 +13,18 @@ int main(int argc, char ** argv) {
   std::string request;
   std::getline(std::cin, request);
 
-  //Split the request
-  std::vector<std::string> to_send = String_Tools::split_str(request, ",");
+  // //Split the request
+  // std::vector<std::string> to_send = String_Tools::split_str(request, ",");
 
-  //Ensure the second string doesn't include '\n'
-  assert(to_send[1].find("\n") == std::string::npos);
+  // //Ensure the second string doesn't include '\n'
+  // assert(to_send[1].find("\n") == std::string::npos);
 
   std::string ip(argv[1]), port(argv[2]);
   //Constructor
   Client client(ip, port);
-
+  
   //Run client,send the 2 arguments
-  client.run_client(to_send[0], to_send[1]);
+  client.run_client(request);
 
   return 0;
 }
