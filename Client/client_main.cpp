@@ -2,13 +2,10 @@
 
 #include <string>
 
+#include "../Tools/String_Tools_Exceptions.h"
 #include "Client.h"
 
-int main(int argc, char ** argv) {
-  if (argc != 3) {
-    std::cerr << "Usage:./client_main [server ip] [server port]";
-    return -1;
-  }
+void run_client_single(Client & client) {
   //Read request from cmd line
   std::string request;
   std::getline(std::cin, request);
@@ -19,12 +16,47 @@ int main(int argc, char ** argv) {
   // //Ensure the second string doesn't include '\n'
   // assert(to_send[1].find("\n") == std::string::npos);
 
-  std::string ip(argv[1]), port(argv[2]);
-  //Constructor
-  Client client(ip, port);
-  
   //Run client,send the 2 arguments
-  client.run_client(request);
+  client.run_single(request);
 
+  return;
+}
+
+void run_client_multiple(Client & client, const std::vector<std::string> & requests) {
+  client.run_multi_thread(requests);
+  return;
+}
+
+int main(int argc, char ** argv) {
+  if (argc != 3 && argc != 4) {
+    std::string usage = "Usage:./client <server_ip> <server_port>\n";
+    usage += "      ./client <server_ip> <server_port> <test_file_path>";
+
+    std::cerr << usage << std::endl;
+    return -1;
+  }
+
+  // create client
+  std::string server_ip(argv[1]);
+  std::string server_port(argv[2]);
+  Client client(server_ip, server_port);
+
+  if (argc == 4) {
+    std::vector<std::string> requests;
+    try {
+      requests = String_Tools::read_vec_from_file(argv[3]);
+    }
+    catch (file_not_found_exception * e) {
+      std::cout << e->what() << std::endl;
+      return EXIT_FAILURE;
+    }
+    for (unsigned int i = 0; i < requests.size(); i++) {
+      std::cout << requests[i] << std::endl;
+    }
+    run_client_multiple(client, requests);
+  }
+  else {
+    run_client_single(client);
+  }
   return 0;
 }

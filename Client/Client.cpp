@@ -14,11 +14,23 @@ std::string Client::recv_response(Socket & socket) {
   return response;
 }
 
-void Client::run_client(const std::string & request) {
+void Client::run_single(const std::string & request) {
   Socket socket;
   socket.connect_to(this->server_ip, this->server_port);
   this->send_request(socket, request);
   std::string response = this->recv_response(socket);
   //next line is for test
   std::cout << "Response is:" << response << std::endl;
+}
+
+void Client::run_multi_thread(const std::vector<std::string> & requests) {
+  for (unsigned int i = 0; i < requests.size(); i++) {
+    std::string request = requests[i];
+    std::thread th(&Client::thread_func, this, request);
+    th.detach();
+  }
+}
+
+void Client::thread_func(const std::string & request) {
+  this->run_single(request);
 }

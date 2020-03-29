@@ -9,6 +9,9 @@ class String_Tools {
   static std::vector<std::string> split_str(const std::string & str,
                                             const std::string & delimiter);
 
+  // read file content as vector of lines
+  static std::vector<std::string> read_vec_from_file(const std::string & path);
+
   // string to unsigned int
   static unsigned int str_to_unsigned_int(const std::string & str);
 

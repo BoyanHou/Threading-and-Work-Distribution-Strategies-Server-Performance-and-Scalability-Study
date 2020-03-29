@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <ctime>
+#include <fstream>
 #include <iostream>
 
 #include "String_Tools_Exceptions.h"
@@ -33,6 +34,24 @@ std::vector<std::string> String_Tools::split_str(const std::string & str,
   } while (start + 1 <= str_len);
 
   return parts;
+}
+
+// read file content as vector of lines
+std::vector<std::string> String_Tools::read_vec_from_file(const std::string & path) {
+  std::ifstream file(path);
+  if (!file.is_open()) {
+    throw new file_not_found_exception();
+  }
+
+  // read file line by line
+  std::string line;
+  std::vector<std::string> res;
+  while (getline(file, line)) {
+    res.push_back(line);
+  }
+
+  file.close();
+  return res;
 }
 
 unsigned int String_Tools::str_to_unsigned_int(const std::string & str) {
