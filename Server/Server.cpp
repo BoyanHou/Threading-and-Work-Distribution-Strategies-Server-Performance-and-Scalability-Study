@@ -41,6 +41,16 @@ void Server::run_pre() {
   // pre-create threads
   for (int i = 0; i < PRE_THREAD_NUM; i++) {
     std::thread pre_thread(&Server::run_pre_thread, this);
+    pre_thread.detach();
+  }
+
+  // always receiving new connection
+  while (1) {
+    Socket client_socket = *((this->server_socket).accept_connection());
+
+    // lock the socket queue
+    std::unique_lock<std::mutex> guard(this->socket_mutex);
+    this->client_sockets.push(client_socket);
   }
 }
 
