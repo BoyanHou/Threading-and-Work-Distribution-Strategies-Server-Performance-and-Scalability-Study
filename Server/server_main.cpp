@@ -1,7 +1,7 @@
-#include "./Server/Server.h"
-#include "./Tools/String_Tools.h"
-#include "./Tools/String_Tools_Exceptions.h"
-#include "global_settings.h"
+#include "../Tools/String_Tools.h"
+#include "../Tools/String_Tools_Exceptions.h"
+#include "../global_settings.h"
+#include "Server.h"
 
 int main(int argc, char * argv[]) {
   std::string usage = "usage: ./server <bucket_num>";
@@ -20,5 +20,7 @@ int main(int argc, char * argv[]) {
     return EXIT_FAILURE;
   }
 
-  Server server(PER_CREATE_THREADS, bucket_num, );
+  Server server(PER_CREATE_THREADS, bucket_num, SERVER_IP, SERVER_PORT);
+
+  server.run();
 }
