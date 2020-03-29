@@ -7,14 +7,18 @@
 
 class Client {
  protected:
-  Socket client_socket;  //the client socket
+  std::string server_ip;
+  std::string server_port;
+
+  void send_request(Socket & socket, const std::string & request);
+  std::string recv_response(Socket & socket);
+
  public:
   // constructor
   Client(const std::string & ip,     //Server's ip
          const std::string & port);  //Server's port
+
   void run_client(const std::string & request);
-  void send_request(const std::string & request);
-  std::string recv_response();
 };
 
 #endif
