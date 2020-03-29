@@ -9,8 +9,9 @@ Server::Server(int thread_mode,
                const std::string & port) {
   this->buckets = std::vector<int>(bucket_num);
   this->thread_mode = thread_mode;
-  this->server_socket = Socket();
+
   this->server_socket.bind_to(ip, port);
+  this->server_socket.set_listen(BACK_LOG);
 }
 
 void Server::run() {
@@ -47,7 +48,7 @@ void Server::process_request(Socket & client_socket) {
       perror(err_str.c_str());
 
       // send back failure info
-      client_socket.send(err_str);
+      client_socket.send_str(err_str);
 
       return;
     }
@@ -59,13 +60,13 @@ void Server::process_request(Socket & client_socket) {
 
     // send back info
     std::string bucket_val_str = std::to_string(bucket_val);
-    client_socket.send(bucket_val_str);
+    client_socket.send_str(bucket_val_str);
   }
   catch (request_format_exception * e) {
     perror(e->what());
 
     // send back failure info
-    client_socket.send(e->what());
+    client_socket.send_str(e->what());
     return;
   }
 }

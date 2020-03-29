@@ -48,7 +48,7 @@ unsigned int String_Tools::str_to_unsigned_int(const std::string & str) {
     if (ch < '0' || ch > '9') {  // not digit
       throw new parse_unsigned_int_exception();
     }
-    if (i == 0 && len > 1) {  // leading 0
+    if (i == 0 && ch == '0' && len > 1) {  // leading 0
       throw new parse_unsigned_int_exception();
     }
     int num = (int)(ch - '0');

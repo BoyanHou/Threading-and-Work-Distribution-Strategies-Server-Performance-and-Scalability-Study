@@ -97,13 +97,13 @@ void Socket::connect_to(const std::string & ip, const std::string & port) {
   freeaddrinfo(info);
 }
 
-void Socket::send(const std::string & str) {
+void Socket::send_str(const std::string & str) {
   std::vector<char> vec;
   String_Tools::load_into_vector(vec, str);
-  this->send(vec);
+  this->send_vec(vec);
 }
 
-void Socket::send(const std::vector<char> & str) {
+void Socket::send_vec(const std::vector<char> & str) {
   int total_bytes = str.size();
 
   int sent_bytes = 0;
@@ -189,6 +189,7 @@ void Socket::bind_to(const std::string & ip, const std::string & port) {
   status = bind(this->sock_fd, addrinfo_list->ai_addr, addrinfo_list->ai_addrlen);
 
   if (status == -1) {
+    perror("Socket bind() error\n");
     std::cout << "Socket failed to bind to " << ip << ":" << port << "\n";
     throw new socket_bind_exception();
   }

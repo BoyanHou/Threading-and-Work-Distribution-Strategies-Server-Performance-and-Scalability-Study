@@ -30,9 +30,9 @@ class Socket {
   virtual std::string get_socket_port();
 
   // send a string
-  virtual void send(const std::vector<char> & content);
+  virtual void send_str(const std::string & content);
   // send a vector of chars
-  virtual void send(const std::string & content);
+  virtual void send_vec(const std::vector<char> & content);
 
   // receive a string
   virtual std::string recv_str(int buffer_size);
