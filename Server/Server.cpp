@@ -47,7 +47,7 @@ void Server::run_pre() {
   // always receiving new connection
   while (1) {
     Socket client_socket = *((this->server_socket).accept_connection());
-
+    std::cout << "accepted once" << std::endl;
     // lock the socket queue
     std::unique_lock<std::mutex> guard(this->socket_mutex);
     this->client_sockets.push(client_socket);
@@ -55,8 +55,9 @@ void Server::run_pre() {
 }
 
 void Server::run_pre_thread() {
+  Socket client_socket;
   while (1) {  // pre-created threads always run
-    Socket client_socket;
+
     bool got_socket = false;
     // check for socket
     if (this->client_sockets.size() != 0) {
@@ -71,12 +72,14 @@ void Server::run_pre_thread() {
     // process request if got a socket
     if (got_socket) {
       this->process_request(client_socket);
+      client_socket.close_socket();
     }
   }
 }
 
-void Server::process_request(Socket & client_socket) {
+void Server::process_request(Socket client_socket) {
   std::string request_str = client_socket.recv_str(CLIENT_BUF_SIZE);
+  std::cout << "Received " + request_str << std::endl;
   try {
     Server::Request request(request_str);
 
@@ -92,7 +95,7 @@ void Server::process_request(Socket & client_socket) {
     }
     // add delay time in a required way
     this->required_delay(request.delay_count);
-
+    std::cout << "processing " + request_str << std::endl;
     // exception-safe lock
     std::unique_lock<std::mutex> guard(bucket_mutex);
     // process bucket value
