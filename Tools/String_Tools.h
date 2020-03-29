@@ -9,6 +9,11 @@ class String_Tools {
   static std::vector<std::string> split_str(const std::string & str,
                                             const std::string & delimiter);
 
+  // replace all instances of one substr to anonther, in a given string
+  static void replace_all(std::string & str,
+                          const std::string & from_substr,
+                          const std::string & to_substr);
+  
   // read file content as vector of lines
   static std::vector<std::string> read_vec_from_file(const std::string & path);
 

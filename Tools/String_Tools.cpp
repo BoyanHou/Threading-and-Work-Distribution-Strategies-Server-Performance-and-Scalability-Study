@@ -36,6 +36,17 @@ std::vector<std::string> String_Tools::split_str(const std::string & str,
   return parts;
 }
 
+void String_Tools::replace_all(std::string & str,
+                               const std::string & from_substr,
+                               const std::string & to_substr) {
+  std::string::size_type i;
+  while((i = str.find(from_substr, i)) != std::string::npos) {
+         str.replace(i, from_substr.length(), to_substr);
+         i += to_substr.length();
+  }
+  
+}
+
 // read file content as vector of lines
 std::vector<std::string> String_Tools::read_vec_from_file(const std::string & path) {
   std::ifstream file(path);

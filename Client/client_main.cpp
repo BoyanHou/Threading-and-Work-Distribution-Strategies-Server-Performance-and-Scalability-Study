@@ -45,14 +45,22 @@ int main(int argc, char ** argv) {
     std::vector<std::string> requests;
     try {
       requests = String_Tools::read_vec_from_file(argv[3]);
+      // de-escape the "\\"s back to "\"s
+      for (unsigned int i = 0; i < requests.size(); i++) {
+        std::string::size_type len = requests[i].length();
+        if (len >= 2 && requests[i].substr(len-2).compare("\\n") == 0) {
+          requests[i] = requests[i].substr(0, len-2);
+          requests[i] += "\n";
+        }
+      }
     }
     catch (file_not_found_exception * e) {
       std::cout << e->what() << std::endl;
       return EXIT_FAILURE;
     }
-    for (unsigned int i = 0; i < requests.size(); i++) {
-      std::cout << requests[i] << std::endl;
-    }
+    // for (unsigned int i = 0; i < requests.size(); i++) {
+    //   std::cout << requests[i] << std::endl;
+    // }
     run_client_multiple(client, requests);
   }
   else {
