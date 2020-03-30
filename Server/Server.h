@@ -17,6 +17,7 @@ class Server {
   Socket server_socket;               // the server socket
   std::queue<Socket> client_sockets;  // the accepted-spawned socket to clients
   int thread_mode;                    // either PRE_CREATE_THREADS, or PER~
+  unsigned int req_count;             // count of total completed requests
   // process request from client
   void process_request(Socket client_socket);
 

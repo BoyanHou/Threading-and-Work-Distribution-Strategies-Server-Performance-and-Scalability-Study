@@ -32,7 +32,18 @@ void Server::run() {
 }
 
 void Server::run_per() {
+  struct timeval start, check;
+  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds
+  double elapsed_seconds;
+  gettimeofday(&start,NULL);
   while(true){//always accept client connection
+    gettimeofday(&check,NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
+      (start.tv_sec + (start.tv_usec/1000000.0));
+    if(elapsed_seconds>=runtime){  //runs over <runtime> seconds, return
+      std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
+      return;
+    }
     Socket client_socket = *((this->server_socket).accept_connection());
     //create a new thread to process request
     std::thread per_thread(&Server::process_request, this, client_socket);
@@ -47,9 +58,18 @@ void Server::run_pre() {
     std::thread pre_thread(&Server::run_pre_thread, this);
     pre_thread.detach();
   }
-
-  // always receiving new connection
-  while (1) {
+  struct timeval start, check;
+  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
+  double elapsed_seconds;
+  gettimeofday(&start,NULL);
+  while (1) { // always receiving new connection
+    gettimeofday(&check,NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
+      (start.tv_sec + (start.tv_usec/1000000.0));
+    if(elapsed_seconds>=runtime){  //runs over <runtime> seconds, return                                              
+      std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
+      return;
+    }
     Socket client_socket = *((this->server_socket).accept_connection());
     // std::cout << "accepted once" << std::endl;
     // lock the socket queue
@@ -78,7 +98,7 @@ void Server::run_pre_thread() {
     // process request if got a socket
     if (got_socket) {
       this->process_request(client_socket);
-      client_socket.close_socket();
+      //client_socket.close_socket();
     }
   }
 }
@@ -96,7 +116,7 @@ void Server::process_request(Socket client_socket) {
 
       // send back failure info
       client_socket.send_str(err_str);
-
+      client_socket.close_socket();
       return;
     }
     // add delay time in a required way
@@ -108,18 +128,22 @@ void Server::process_request(Socket client_socket) {
     int bucket_val = this->buckets[request.bucket_index];
     bucket_val += request.delay_count;
     this->buckets[request.bucket_index] = bucket_val;
+    // increment the req_count
+    this->req_count++;
     // unlock
     guard.unlock();
 
     // send back info
     std::string bucket_val_str = std::to_string(bucket_val) + "\n";
     client_socket.send_str(bucket_val_str);
+    client_socket.close_socket();
   }
   catch (request_format_exception * e) {
     perror(e->what());
 
     // send back failure info
     client_socket.send_str(e->what());
+    client_socket.close_socket();
     return;
   }
 }

@@ -20,7 +20,7 @@ int main(int argc, char * argv[]) {
     return EXIT_FAILURE;
   }
 
-  Server server(PER_CREATE_THREADS, bucket_num, SERVER_IP, SERVER_PORT);
+  Server server(PRE_CREATE_THREADS, bucket_num, SERVER_IP, SERVER_PORT);
 
   server.run();
 }
