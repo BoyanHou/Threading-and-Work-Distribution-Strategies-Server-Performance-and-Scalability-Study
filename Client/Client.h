@@ -18,6 +18,12 @@ class Client {
   // create a socket to communicate with server regarding one request
   void thread_func(const std::string & request);
 
+  // while(1) loop for a thread; each loop will use a randomly generated request
+  void thread_func_rand(unsigned int bucket_num,
+                        unsigned int delay_min,
+                        unsigned int delay_max);
+
+  
  public:
   // constructor
   Client(const std::string & ip,     //Server's ip
@@ -28,6 +34,14 @@ class Client {
   // run client for multiple threads
   // create one thread for each request
   void run_multi_thread(const std::vector<std::string> & requests);
+
+  // threads are pre-created
+  // requests are randomly generated
+  void run_multi_thread(unsigned int thread_num,
+                        unsigned int bucket_num,
+                        unsigned int delay_min,
+                        unsigned int delay_max);  
+
 };
 
 #endif
