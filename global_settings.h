@@ -15,5 +15,5 @@
 #define SERVER_IP "0.0.0.0"
 #define PRE_THREAD_NUM 10        // number of pre-created thread num (int SERVER)
 #define CLIENT_BUCKET_NUM_OFF_RANGE 1.0 // when client is randomly generating bucket index, it can have a range either more than the server has(>1.0) or has fewer(<1.0)
-
+#define SERVER_RUNTIME 60  // the server runtime (in second)
 #endif
