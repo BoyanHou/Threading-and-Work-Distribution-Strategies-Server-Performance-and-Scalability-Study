@@ -32,24 +32,23 @@ void Server::run() {
 }
 
 void Server::run_per() {
+
+  //Timer is buggy, TODO
   struct timeval start, check;
   unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds
   double elapsed_seconds;
   gettimeofday(&start,NULL);
-  while(true){//always accept client connection
+  do{//always accept client connection
     gettimeofday(&check,NULL);
     elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
       (start.tv_sec + (start.tv_usec/1000000.0));
-    if(elapsed_seconds>=runtime){  //runs over <runtime> seconds, return
-      std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
-      return;
-    }
     Socket client_socket = *((this->server_socket).accept_connection());
     //create a new thread to process request
     std::thread per_thread(&Server::process_request, this, client_socket);
     //detach from the main thread
     per_thread.detach();
-  }
+  }while(elapsed_seconds < runtime);
+  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
 }
 
 void Server::run_pre() {
@@ -58,18 +57,7 @@ void Server::run_pre() {
     std::thread pre_thread(&Server::run_pre_thread, this);
     pre_thread.detach();
   }
-  struct timeval start, check;
-  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
-  double elapsed_seconds;
-  gettimeofday(&start,NULL);
-  while (1) { // always receiving new connection
-    gettimeofday(&check,NULL);
-    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
-      (start.tv_sec + (start.tv_usec/1000000.0));
-    if(elapsed_seconds>=runtime){  //runs over <runtime> seconds, return                                              
-      std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
-      return;
-    }
+  while(1){ // always receiving new connection
     Socket client_socket = *((this->server_socket).accept_connection());
     // std::cout << "accepted once" << std::endl;
     // lock the socket queue
@@ -80,8 +68,17 @@ void Server::run_pre() {
 
 void Server::run_pre_thread() {
   Socket client_socket;
-  while (1) {  // pre-created threads always run
+  struct timeval start, check;
+  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
+  double elapsed_seconds;
+  gettimeofday(&start,NULL);
 
+  do{
+  // while (1) {  // pre-created threads always run
+    gettimeofday(&check,NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
+      (start.tv_sec + (start.tv_usec/1000000.0));
+    
     bool got_socket = false;
 
     // exception-safe lock
@@ -100,7 +97,9 @@ void Server::run_pre_thread() {
       this->process_request(client_socket);
       //client_socket.close_socket();
     }
-  }
+  }while(elapsed_seconds < runtime);
+  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
+  exit(EXIT_SUCCESS);
 }
 
 void Server::process_request(Socket client_socket) {
