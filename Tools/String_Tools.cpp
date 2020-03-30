@@ -40,11 +40,10 @@ void String_Tools::replace_all(std::string & str,
                                const std::string & from_substr,
                                const std::string & to_substr) {
   std::string::size_type i;
-  while((i = str.find(from_substr, i)) != std::string::npos) {
-         str.replace(i, from_substr.length(), to_substr);
-         i += to_substr.length();
+  while ((i = str.find(from_substr, i)) != std::string::npos) {
+    str.replace(i, from_substr.length(), to_substr);
+    i += to_substr.length();
   }
-  
 }
 
 // read file content as vector of lines
@@ -82,7 +81,7 @@ unsigned int String_Tools::str_to_unsigned_int(const std::string & str) {
       throw new parse_unsigned_int_exception();
     }
     int num = (int)(ch - '0');
-    res += res * 10 + num;
+    res = res * 10 + num;
   }
   return res;
 }
