@@ -32,23 +32,23 @@ void Server::run() {
 }
 
 void Server::run_per() {
-
   //Timer is buggy, TODO
   struct timeval start, check;
-  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds
+  unsigned int runtime = SERVER_RUNTIME;  //run the server for <runtime> seconds
   double elapsed_seconds;
-  gettimeofday(&start,NULL);
-  do{//always accept client connection
-    gettimeofday(&check,NULL);
-    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
-      (start.tv_sec + (start.tv_usec/1000000.0));
+  gettimeofday(&start, NULL);
+  do {  //always accept client connection
+    gettimeofday(&check, NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec / 1000000.0)) -
+                      (start.tv_sec + (start.tv_usec / 1000000.0));
     Socket client_socket = *((this->server_socket).accept_connection());
     //create a new thread to process request
     std::thread per_thread(&Server::process_request, this, client_socket);
     //detach from the main thread
     per_thread.detach();
-  }while(elapsed_seconds < runtime);
-  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
+  } while (elapsed_seconds < runtime);
+  std::cout << "In " << elapsed_seconds
+            << " seconds, process requests: " << this->req_count << std::endl;
 }
 
 void Server::run_pre() {
@@ -58,26 +58,27 @@ void Server::run_pre() {
     pre_thread.detach();
   }
   struct timeval start, check;
-  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
+  unsigned int runtime = SERVER_RUNTIME;  //run the server for <runtime> seconds
   double elapsed_seconds;
-  gettimeofday(&start,NULL);
-  do{ // always receiving new connection
-    gettimeofday(&check,NULL);
-    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
-      (start.tv_sec + (start.tv_usec/1000000.0));
+  gettimeofday(&start, NULL);
+  do {  // always receiving new connection
+    gettimeofday(&check, NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec / 1000000.0)) -
+                      (start.tv_sec + (start.tv_usec / 1000000.0));
     Socket client_socket = *((this->server_socket).accept_connection());
     // std::cout << "accepted once" << std::endl;
     // lock the socket queue
     std::unique_lock<std::mutex> guard(this->socket_mutex);
     this->client_sockets.push(client_socket);
-  }while(elapsed_seconds < runtime);
-  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
+  } while (elapsed_seconds < runtime);
+  std::cout << "In " << elapsed_seconds
+            << " seconds, process requests: " << this->req_count << std::endl;
 }
 
 void Server::run_pre_thread() {
   Socket client_socket;
   //  struct timeval start, check;
-  // unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds       
+  // unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds
   // double elapsed_seconds;
   //gettimeofday(&start,NULL);
 
@@ -86,7 +87,7 @@ void Server::run_pre_thread() {
     // gettimeofday(&check,NULL);
     // elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
     //  (start.tv_sec + (start.tv_usec/1000000.0));
-    
+
     bool got_socket = false;
 
     // exception-safe lock
@@ -110,7 +111,7 @@ void Server::run_pre_thread() {
 
 void Server::process_request(Socket client_socket) {
   std::string request_str = client_socket.recv_str(CLIENT_BUF_SIZE);
-  std::cout << "Received " + request_str << std::endl;
+  //std::cout << "Received " + request_str << std::endl;
   try {
     Server::Request request(request_str);
 
@@ -126,7 +127,7 @@ void Server::process_request(Socket client_socket) {
     }
     // add delay time in a required way
     this->required_delay(request.delay_count);
-    std::cout << "processing " + request_str << std::endl;
+    //std::cout << "processing " + request_str << std::endl;
     // exception-safe lock
     std::unique_lock<std::mutex> guard(bucket_mutex);
     // process bucket value
