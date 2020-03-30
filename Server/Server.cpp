@@ -57,27 +57,35 @@ void Server::run_pre() {
     std::thread pre_thread(&Server::run_pre_thread, this);
     pre_thread.detach();
   }
-  while(1){ // always receiving new connection
+  struct timeval start, check;
+  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
+  double elapsed_seconds;
+  gettimeofday(&start,NULL);
+  do{ // always receiving new connection
+    gettimeofday(&check,NULL);
+    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
+      (start.tv_sec + (start.tv_usec/1000000.0));
     Socket client_socket = *((this->server_socket).accept_connection());
     // std::cout << "accepted once" << std::endl;
     // lock the socket queue
     std::unique_lock<std::mutex> guard(this->socket_mutex);
     this->client_sockets.push(client_socket);
-  }
+  }while(elapsed_seconds < runtime);
+  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
 }
 
 void Server::run_pre_thread() {
   Socket client_socket;
-  struct timeval start, check;
-  unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds          
-  double elapsed_seconds;
-  gettimeofday(&start,NULL);
+  //  struct timeval start, check;
+  // unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds       
+  // double elapsed_seconds;
+  //gettimeofday(&start,NULL);
 
-  do{
-  // while (1) {  // pre-created threads always run
-    gettimeofday(&check,NULL);
-    elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
-      (start.tv_sec + (start.tv_usec/1000000.0));
+  //do{
+  while (1) {  // pre-created threads always run
+    // gettimeofday(&check,NULL);
+    // elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
+    //  (start.tv_sec + (start.tv_usec/1000000.0));
     
     bool got_socket = false;
 
@@ -97,9 +105,7 @@ void Server::run_pre_thread() {
       this->process_request(client_socket);
       //client_socket.close_socket();
     }
-  }while(elapsed_seconds < runtime);
-  std::cout<<"In "<<elapsed_seconds<<" seconds, process requests: "<<this->req_count<<std::endl;
-  exit(EXIT_SUCCESS);
+  }
 }
 
 void Server::process_request(Socket client_socket) {
