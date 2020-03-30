@@ -117,8 +117,8 @@ void Server::process_request(Socket client_socket) {
 
     // bucket index too large
     if (request.bucket_index >= this->buckets.size()) {
-      std::string err_str = "Invalid Bucket Index";
-      perror(err_str.c_str());
+      std::string err_str = "Invalid Bucket Index: " + request.bucket_index;
+      std::cout << (err_str.c_str()) << std::endl;
 
       // send back failure info
       client_socket.send_str(err_str);
