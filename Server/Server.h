@@ -16,9 +16,10 @@ class Server {
   std::mutex socket_mutex;
   std::vector<std::atomic<int> > buckets;  // the "buckets" of this project
   Socket server_socket;                    // the server socket
-  std::queue<Socket> client_sockets;       // the accepted-spawned socket to clients
-  int thread_mode;                         // either PRE_CREATE_THREADS, or PER~
-  std::atomic<int> req_count;              // count of total completed requests
+  std::vector<std::queue<Socket> >
+      socket_queues;           // each thread has its own queue of sockets to process
+  int thread_mode;             // either PRE_CREATE_THREADS, or PER~
+  std::atomic<int> req_count;  // count of total completed requests
   // process request from client
   void process_request(Socket client_socket);
 
@@ -42,8 +43,9 @@ class Server {
   // let the server run
   void run();
 
-  void run_pre();         // run in pre-create mode
-  void run_pre_thread();  // func for pre-created thread to run
+  void run_pre();  // run in pre-create mode
+  void run_pre_thread(
+      std::queue<Socket> & socket_queue);  // func for pre-created thread to run
 
   void run_per();  // run in per-create mode
 };

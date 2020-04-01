@@ -54,33 +54,49 @@ void Server::run_per() {
 void Server::run_pre() {
   // pre-create threads
   for (int i = 0; i < PRE_THREAD_NUM; i++) {
-    std::thread pre_thread(&Server::run_pre_thread, this);
+    // create a queue for each thread
+    this->socket_queues.push_back(std::queue<Socket>());
+    std::thread pre_thread(
+        &Server::run_pre_thread, this, std::ref(this->socket_queues[i]));
     pre_thread.detach();
   }
   struct timeval start, check;
   unsigned int runtime = SERVER_RUNTIME;  //run the server for <runtime> seconds
   double elapsed_seconds;
   gettimeofday(&start, NULL);
+
+  // use round-robin to assign socket to threads
+  int robin_index = 0;
+
   do {  // always receiving new connection
+
+    robin_index = robin_index % PRE_THREAD_NUM;
+
     gettimeofday(&check, NULL);
     elapsed_seconds = (check.tv_sec + (check.tv_usec / 1000000.0)) -
                       (start.tv_sec + (start.tv_usec / 1000000.0));
+
     Socket client_socket = *((this->server_socket).accept_connection());
     // std::cout << "accepted once" << std::endl;
+
     // lock the socket queue
-    std::unique_lock<std::mutex> guard(this->socket_mutex);
-    this->client_sockets.push(client_socket);
+    // std::unique_lock<std::mutex> guard(this->socket_mutex);
+    // this->client_sockets.push(client_socket);
+
+    this->socket_queues[robin_index].push(client_socket);
+
   } while (elapsed_seconds < runtime);
   std::cout << "In " << elapsed_seconds
             << " seconds, process requests: " << this->req_count << std::endl;
 }
 
-void Server::run_pre_thread() {
-  Socket client_socket;
+void Server::run_pre_thread(std::queue<Socket> & socket_queue) {
   //  struct timeval start, check;
   // unsigned int runtime = SERVER_RUNTIME; //run the server for <runtime> seconds
   // double elapsed_seconds;
   //gettimeofday(&start,NULL);
+
+  //  Socket client_socket;
 
   //do{
   while (1) {  // pre-created threads always run
@@ -88,24 +104,25 @@ void Server::run_pre_thread() {
     // elapsed_seconds = (check.tv_sec + (check.tv_usec/1000000.0)) -
     //  (start.tv_sec + (start.tv_usec/1000000.0));
 
-    bool got_socket = false;
+    // bool got_socket = false;
 
-    // exception-safe lock
-    std::unique_lock<std::mutex> guard(this->socket_mutex);
+    // // exception-safe lock
+    // std::unique_lock<std::mutex> guard(this->socket_mutex);
     // check for socket
-    if (this->client_sockets.size() != 0) {
-      client_socket = this->client_sockets.front();  // acquire
-      this->client_sockets.pop();                    // remove
-      got_socket = true;
+    if (socket_queue.size() != 0) {
+      Socket client_socket = socket_queue.front();  // acquire
+      socket_queue.pop();                           // remove
+      // got_socket = true;
+      this->process_request(client_socket);
     }
     // unlock
-    guard.unlock();
+    //    guard.unlock();
 
     // process request if got a socket
-    if (got_socket) {
-      this->process_request(client_socket);
-      //client_socket.close_socket();
-    }
+    // if (got_socket) {
+    //   this->process_request(client_socket);
+    //   //client_socket.close_socket();
+    // }
   }
 }
 
