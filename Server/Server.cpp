@@ -54,12 +54,17 @@ void Server::run_per() {
 void Server::run_pre() {
   // pre-create threads
   for (int i = 0; i < PRE_THREAD_NUM; i++) {
+    //std::cout << "creating queue No.: " << i << std::endl;
     // create a queue for each thread
     this->socket_queues.push_back(std::queue<Socket>());
+  }
+
+  for (int i = 0; i < PRE_THREAD_NUM; i++) {
     std::thread pre_thread(
         &Server::run_pre_thread, this, std::ref(this->socket_queues[i]));
     pre_thread.detach();
   }
+
   struct timeval start, check;
   unsigned int runtime = SERVER_RUNTIME;  //run the server for <runtime> seconds
   double elapsed_seconds;
@@ -112,6 +117,7 @@ void Server::run_pre_thread(std::queue<Socket> & socket_queue) {
     // std::unique_lock<std::mutex> guard(this->socket_mutex);
     // check for socket
     if (socket_queue.size() != 0) {
+      //std::cout << "Not 0! " << socket_queue.size() << std::endl;
       Socket client_socket = socket_queue.front();  // acquire
       socket_queue.pop();                           // remove
       // got_socket = true;
