@@ -85,6 +85,8 @@ void Server::run_pre() {
 
     this->socket_queues[robin_index].push(client_socket);
 
+    robin_index++;
+
   } while (elapsed_seconds < runtime);
   std::cout << "In " << elapsed_seconds
             << " seconds, process requests: " << this->req_count << std::endl;
