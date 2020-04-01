@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++17 -pthread -O0 -ggdb -g -Werror -Wall -pedantic -fPIC
+CFLAGS=-std=c++17 -pthread -O3 -ggdb -g -Werror -Wall -pedantic -fPIC
 
 TOOL = ./Tools/
 SERV = ./Server/
