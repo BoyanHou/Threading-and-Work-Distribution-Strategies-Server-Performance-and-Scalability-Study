@@ -9,7 +9,7 @@ Server::Server(int thread_mode,
                std::size_t bucket_num,
                const std::string & ip,
                const std::string & port) {
-  this->buckets = std::vector<int>(bucket_num);
+  this->buckets = std::vector<std::atomic<int> >(bucket_num);
   this->thread_mode = thread_mode;
 
   this->server_socket.bind_to(ip, port);
@@ -128,16 +128,21 @@ void Server::process_request(Socket client_socket) {
     // add delay time in a required way
     this->required_delay(request.delay_count);
     //std::cout << "processing " + request_str << std::endl;
-    // exception-safe lock
-    std::unique_lock<std::mutex> guard(bucket_mutex);
-    // process bucket value
-    int bucket_val = this->buckets[request.bucket_index];
-    bucket_val += request.delay_count;
-    this->buckets[request.bucket_index] = bucket_val;
-    // increment the req_count
+
+    // // exception-safe lock
+    // std::unique_lock<std::mutex> guard(bucket_mutex);
+    // // process bucket value
+    // int bucket_val = this->buckets[request.bucket_index];
+    // bucket_val += request.delay_count;
+    // this->buckets[request.bucket_index] = bucket_val;
+    // // increment the req_count
+    // this->req_count++;
+    // // unlock
+    // guard.unlock();
+
+    // using c++ atomic int, lock free!
+    int bucket_val = this->buckets[request.bucket_index] += request.delay_count;
     this->req_count++;
-    // unlock
-    guard.unlock();
 
     // send back info
     std::string bucket_val_str = std::to_string(bucket_val) + "\n";

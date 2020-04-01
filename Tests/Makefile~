@@ -1,0 +1,13 @@
+CC=g++
+CFLAGS=-std=c++17 -pthread -O0 -ggdb -g -Werror -Wall -pedantic -fPIC
+
+TOOL = ./Tools/
+SERV = ./Server/
+CLNT = ./Client/
+SOCK = ./Socket/
+GLB = ./
+
+all: server client
+
+server: server_main.o server.o string_tools.o socket.o
+	$(CC) $(CFLAGS) -o $@ $< server.o string_tools.o socket.o

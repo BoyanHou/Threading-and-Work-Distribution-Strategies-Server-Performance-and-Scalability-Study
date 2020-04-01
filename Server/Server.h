@@ -1,6 +1,7 @@
 #ifndef SERVER_BH
 #define SERVER_BH
 
+#include <atomic>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -13,11 +14,11 @@ class Server {
  protected:
   std::mutex bucket_mutex;
   std::mutex socket_mutex;
-  std::vector<int> buckets;           // the "buckets" of this project
-  Socket server_socket;               // the server socket
-  std::queue<Socket> client_sockets;  // the accepted-spawned socket to clients
-  int thread_mode;                    // either PRE_CREATE_THREADS, or PER~
-  unsigned int req_count;             // count of total completed requests
+  std::vector<std::atomic<int> > buckets;  // the "buckets" of this project
+  Socket server_socket;                    // the server socket
+  std::queue<Socket> client_sockets;       // the accepted-spawned socket to clients
+  int thread_mode;                         // either PRE_CREATE_THREADS, or PER~
+  std::atomic<int> req_count;              // count of total completed requests
   // process request from client
   void process_request(Socket client_socket);
 

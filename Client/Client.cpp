@@ -23,14 +23,16 @@ void Client::run_single(const std::string & request) {
   //  std::cout << "A client thread is trying to connect to server" << std::endl;
   try {
     socket.connect_to(this->server_ip, this->server_port);
-    std::cout << "Connection success" << std::endl;
+    //std::cout << "Connection success" << std::endl;
     this->send_request(socket, request);
     std::string response = this->recv_response(socket);
     //next line is for test
-    std::cout << "Response is:" << response << std::endl;
+    //std::cout << "Response is:" << response << std::endl;
+    socket.close_socket();
   }
   catch (std::exception * e) {
     std::cout << e->what() << std::endl;
+    socket.close_socket();
   }
 }
 
