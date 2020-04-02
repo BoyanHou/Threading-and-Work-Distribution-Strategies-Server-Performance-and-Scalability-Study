@@ -59,32 +59,42 @@ void Server::run_per() {
 }
 
 void Server::run_pre() {
-  // create thread pool
-  std::threadpool thread_pool{PRE_THREAD_NUM};
+  
+  // create threads
+  for (int i = 0; i < PRE_THREAD_NUM; i++) {
+    std::thread pre_thread(Server::run_pre_thread,
+			   std::ref(this->server_socket),
+			   std::ref(this->req_count),
+			   std::ref(this->buckets));
+    pre_thread.detach();
+  }
   
   struct timeval start, check;
   unsigned int runtime = SERVER_RUNTIME;  //run the server for <runtime> seconds
   double elapsed_seconds;
   gettimeofday(&start, NULL);
 
-  do {  // always receiving new connection
-
+  do {
+    
     gettimeofday(&check, NULL);
     elapsed_seconds = (check.tv_sec + (check.tv_usec / 1000000.0)) -
                       (start.tv_sec + (start.tv_usec / 1000000.0));
-
-    Socket client_socket = *((this->server_socket).accept_connection());
-    // std::cout << "accepted once" << std::endl;
-
-    // commit mission to thread pool
-    thread_pool.commit(Server::process_request,
-		       client_socket,
-		       std::ref(this->req_count),
-		       std::ref(this->buckets));
-
+    
   } while (elapsed_seconds < runtime);
   std::cout << "In " << elapsed_seconds
             << " seconds, process requests: " << this->req_count << std::endl;
+}
+
+
+void Server::run_pre_thread(Socket & server_socket,
+			    std::atomic<int> & req_count,
+			    std::vector<std::atomic<int> > &buckets){
+  while (1) {
+     Socket client_socket = *(server_socket.accept_connection());
+     Server::process_request(client_socket,
+			     req_count,
+			     buckets);
+  }
 }
 
 //
