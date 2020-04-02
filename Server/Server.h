@@ -21,10 +21,12 @@ class Server {
   int thread_mode;             // either PRE_CREATE_THREADS, or PER~
   std::atomic<int> req_count;  // count of total completed requests
   // process request from client
-  void process_request(Socket client_socket);
+  static void process_request(Socket client_socket,
+			      std::atomic<int> & req_count,
+			      std::vector<std::atomic<int> > &buckets);
 
   // hw-required way of adding delay to threads
-  void required_delay(unsigned int req_delay);
+  static void required_delay(unsigned int req_delay);
 
   class Request {
    public:
@@ -44,7 +46,6 @@ class Server {
   void run();
 
   void run_pre();         // run in pre-create mode
-  void run_pre_thread();  // func for pre-created thread to run
 
   void run_per();  // run in per-create mode
 };
