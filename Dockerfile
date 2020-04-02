@@ -11,4 +11,4 @@ RUN make clean
 RUN make
 
 ENTRYPOINT ["./server"]
-#CMD ["./server"]
+CMD ["2048"]
