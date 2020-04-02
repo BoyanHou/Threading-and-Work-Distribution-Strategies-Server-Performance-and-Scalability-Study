@@ -87,6 +87,7 @@ void Server::run_pre() {
             << " seconds, process requests: " << this->req_count << std::endl;
 }
 
+//
 void Server::process_request(Socket client_socket,
 			     std::atomic<int> & req_count,
 			     std::vector<std::atomic<int> > &buckets) {
