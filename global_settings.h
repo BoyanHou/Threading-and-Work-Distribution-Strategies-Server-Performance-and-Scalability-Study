@@ -13,8 +13,8 @@
 #define PER_CREATE_THREADS 1     // per-create threads mode
 #define SERVER_PORT "12345"
 #define SERVER_IP "0.0.0.0"
-#define PRE_THREAD_NUM 300  // number of pre-created thread num (int SERVER)
+#define PRE_THREAD_NUM 1000  // number of pre-created thread num (int SERVER)
 #define CLIENT_BUCKET_NUM_OFF_RANGE \
   1.0  // when client is randomly generating bucket index, it can have a range either more than the server has(>1.0) or has fewer(<1.0)
-#define SERVER_RUNTIME 60  // the server runtime (in second)
+#define SERVER_RUNTIME 300  // the server runtime (in second)
 #endif

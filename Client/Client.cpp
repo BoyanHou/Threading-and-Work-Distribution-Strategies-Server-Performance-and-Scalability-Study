@@ -31,7 +31,7 @@ void Client::run_single(const std::string & request) {
     socket.close_socket();
   }
   catch (std::exception * e) {
-    std::cout << e->what() << std::endl;
+    //std::cout << e->what() << std::endl;
     socket.close_socket();
   }
 }
