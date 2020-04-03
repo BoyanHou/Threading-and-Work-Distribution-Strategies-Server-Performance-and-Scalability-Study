@@ -7,19 +7,25 @@ CLNT = ./Client/
 SOCK = ./Socket/
 GLB = ./
 
-all: server client
+all: server client_scale client_func
 
 server: server_main.o server.o string_tools.o socket.o
 	$(CC) $(CFLAGS) -o $@ $< server.o string_tools.o socket.o
 
-client: client_main.o client.o string_tools.o socket.o
-	$(CC) $(CFLAGS) -o $@ $< client.o string_tools.o socket.o
+client_scale: client_main.o client_scale.o string_tools.o socket.o
+	$(CC) $(CFLAGS) -o $@ $< client_scale.o string_tools.o socket.o
+
+client_func: client_main.o client_func.o string_tools.o socket.o
+	$(CC) $(CFLAGS) -o $@ $< client_func.o string_tools.o socket.o
 
 client_main.o: $(CLNT)client_main.cpp $(GLB)global_settings.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-client.o: $(CLNT)Client.cpp $(CLNT)Client.h $(GLB)global_settings.h
+client_scale.o: $(CLNT)Client.cpp $(CLNT)Client.h $(GLB)global_settings.h
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+client_func.o: $(CLNT)Client.cpp $(CLNT)Client.h $(GLB)global_settings.h
+	$(CC) $(CFLAGS) -c -DFUNC_TEST -o $@ $<
 
 server_main.o: $(SERV)server_main.cpp $(GLB)global_settings.h
 	$(CC) $(CFLAGS) -c -o $@ $<
