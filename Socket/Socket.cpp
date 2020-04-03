@@ -141,7 +141,7 @@ std::vector<char> Socket::recv_vec(int buffer_size) {
 
   //std::cout << "What is in the recv buffer??::" << buffer << "\n";
   if (buffer_len == 0) {
-    std::cout << "Received string length = 0; " << strerror(errno) << "\n";
+    //std::cout << "Received string length = 0; " << strerror(errno) << "\n";
     throw new connection_break_exception();
   }
 
