@@ -40,4 +40,4 @@ socket.o: $(SOCK)Socket.cpp $(SOCK)Socket.h $(SOCK)Socket_Exceptions.h $(GLB)glo
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm *.o server client
+	rm *.o server client_func client_scale
