@@ -62,7 +62,7 @@ Team member: Boyan Hou(bh214), Kefan Lin(kl352)
 - **To change CPU cores**
 
   ```shell
-  $ emacs docker-compose.yml 
+  $ emacs docker-compose.yml   
   ```
 
   **Then find: (in line 7)**
