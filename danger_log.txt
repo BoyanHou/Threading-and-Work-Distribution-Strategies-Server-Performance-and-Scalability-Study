@@ -1,0 +1,18 @@
+1. What implementation will be used for pre-request-create threading strategy?
+We first thought we could utilize a "request queue": the main thread will continuously accept requests and put them in the queue. Then the re-created threads will all get requests from this queue to process.
+However, the aforementioned method requires both lock in the main thread and lock in the spawned threads, resulting in a degraded throughput.
+We finally came up with this strategy: let each of the spawned threads have the reference of the main socket, and each of the threads can call "accept" continuously, then receive and process the server's requests.
+
+2. How do we count the finished requests number in server?
+We first thought we can use an integer field in the Server class, and each thread will first lock and then increase the number after it finishes a request.
+But then we chose to use the atomic integer in c++, which does not require synchronization between different threads.
+
+3. How do we use a single client to continuously send requests to server?
+The easiest way to do this is to continously create threads and try to send requests to the server. But this is a less controllable way and we worried it might saturate the hardware with unlimited number of threads alive concurrently.
+Then we decided to use pre-create strategty, to create a certain number of threads and let them run in a loop to send requests to server. In this way we can control how many threads there will be in the client, and accurately know at which point we can saturate the server.
+
+4. How do we make sure the client will saturate the server?
+By test-increase-test the the client's (and the server's, when the server uses pre-request-create strategy too) threads number, until the point that when we increase the threads number but the server's throughput does not improve any more.
+
+5. Do we need to worry about the server overload the machine when using a per-request-create strategy?
+No, because the client uses a pre-create strategy, meaning there will never be too much requests arriving at the server to overload the machine.
