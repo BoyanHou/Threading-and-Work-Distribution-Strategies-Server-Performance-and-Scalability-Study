@@ -3,7 +3,6 @@
 #include <sys/time.h>  // for "gettimeofday()"
 
 #include "../Tools/String_Tools_Exceptions.h"
-#include "../Thread_Pool/Thread_Pool.h"  // this is the thread pool implementation we found from the internet
 #include "Server_Exceptions.h"
 
 Server::Server(int thread_mode,
