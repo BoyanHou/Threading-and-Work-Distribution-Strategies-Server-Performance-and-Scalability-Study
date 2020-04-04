@@ -78,7 +78,7 @@ Team member: Boyan Hou(bh214), Kefan Lin(kl352)
 - **To change bucket size**
 
   ```shell
-  $ emacs Dockerfile
+  $ emacs Dockerfile  
   ```
 
   **Then find: (in line 14)**
